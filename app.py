@@ -31,7 +31,7 @@ def create_todo():
         db.session.add(todo)
         db.session.commit()
         body['description'] = todo.description
-    except:
+    except Exception:
         error = True
         db.session.rollback()
         print(sys.exc_info())
@@ -39,6 +39,20 @@ def create_todo():
         db.session.close()
     if not error:
         return jsonify(body)
+
+
+@app.route('/todos/<todo_id>/set-completed', methods=['POST'])
+def set_completed_todo(todo_id):
+    try:
+        completed = request.get_json()['completed']
+        todo = Todo.query.get(todo_id)
+        todo.completed = completed
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+    finally:
+        db.session.close()
+    return redirect(url_for('index'))
 
 
 @app.route('/')
