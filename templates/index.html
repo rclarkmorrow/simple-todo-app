@@ -71,6 +71,7 @@
           delButton.innerHTML = '&cross;';
           liItem.appendChild(delButton);
           document.getElementById('todos').appendChild(liItem);
+          document.getElementById('form').reset();
           document.getElementById('error').className = 'hidden';
         })
         .catch(function() {
