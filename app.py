@@ -30,6 +30,8 @@ def create_todo():
         todo = Todo(description=description)
         db.session.add(todo)
         db.session.commit()
+        body['id'] = todo.id
+        body['completed'] = todo.completed
         body['description'] = todo.description
     except Exception:
         error = True
@@ -37,7 +39,9 @@ def create_todo():
         print(sys.exc_info())
     finally:
         db.session.close()
-    if not error:
+    if error:
+        abort(400)
+    else:
         return jsonify(body)
 
 
