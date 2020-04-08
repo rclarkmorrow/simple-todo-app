@@ -14,7 +14,7 @@
       li {
         clear: both;
       }
-      li button {
+      .del-button {
         /* -webkit-appearance: none; */
         border: none;
         outline: none;
@@ -27,7 +27,7 @@
     </style>
   </head>
   <body>
-    <form id="form">
+    <form id="form" method="post" action="/todos/create">
       <input type="text" id="description" name="description" />
       <input type="submit" value="Create" />
     </form>
@@ -36,11 +36,12 @@
       {% for d in data %}
       <li><input class="check-status" data-id="{{ d.id }}" type="checkbox" {% if d.completed %} 
         checked {% endif %} /> {{ d.description }}
-      <button>&cross;</button>
+      <button class="del-button" data-id="{{ d.id }}">&cross;</button>
       </li>
       {% endfor %}
     </ul>
     <script>
+
       const checkboxes = document.querySelectorAll('.check-status');
       for (let i = 0; i < checkboxes.length; i++) {
         const checkbox = checkboxes[i];
@@ -62,7 +63,7 @@
           })
           .catch(function() {
           document.getElementById('error').className = '';
-          }) 
+          });
         }
       }
       document.getElementById('form').onsubmit = function(e) {
@@ -90,7 +91,7 @@
           const descText = document.createTextNode(' ' + jsonResponse.description);
           liItem.appendChild(descText);
           const delButton = document.createElement('button');
-          delButton.className = 'delete--button';
+          delButton.className = 'del-button';
           delButton.setAttribute('data-id', jsonResponse.id);
           delButton.innerHTML = '&cross;';
           liItem.appendChild(delButton);
@@ -101,6 +102,22 @@
           document.getElementById('error').className = '';
         })
       }
+      const delButtons = document.querySelectorAll('.del-button');
+      for (let i = 0; i < delButtons.length; i++ ) {
+        const delBtn = delButtons[i];
+        delBtn.onclick = function(e) {
+          console.log('event', e);
+          const todoId = e.target.dataset['id'];
+          fetch('/todos/' + todoId, {
+            method: 'DELETE'
+          })
+          .then(function(){
+            const item = e.target.parentElement;
+            item.remove();
+          });
+        }
+      }
+
     </script>
   </body>
 </html>
